@@ -1,0 +1,23 @@
+version: '3.7'
+services:
+  ssh-tunnel:
+    environment:
+      - SSH_FILE=id_rsa
+      - SSH_PASSPHRASE=secret_passphrase
+      - HOSTS=
+                user@50.0.0.1 (63790:0.0.0.0:63790, 33306:0.0.0.0:33306, 2022:0.0.0.0:2022) =>
+                xmiko@[docker inspect test-docker | grep "IPAddress"]
+                (
+                  63790:[docker inspect redis | grep "IPAddress"]:6379,
+                  33306:[docker inspect mysql | grep "IPAddress"]:3306,
+                  2022:127.0.0.1:22
+                )
+    networks:
+      static-network:
+        ipv4_address: 172.0.0.1
+
+networks:
+  static-network:
+    ipam:
+      config:
+        -   subnet: 172.0.0.0/16

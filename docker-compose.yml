@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  ssh-tunnel:
+    container_name: 'ssh-tunnel'
+    build:
+      context: docker/
+    volumes:
+      - $HOME/.ssh:/home/ssh/.ssh
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 32M
+      restart_policy:
+        condition: on-failure
+        delay: 25s
+        max_attempts: 20
+
