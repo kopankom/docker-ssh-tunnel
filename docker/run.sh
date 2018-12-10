@@ -23,10 +23,6 @@ function extract_hosts_to_forward() {
     HOST=`echo $STRING | grep -oP "(?<=\:)(.*)(?=\:)"`
     echo $HOST
 }
-function extract_ip() {
-    STRING=$1
-    echo "$STRING" | grep -oP "([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})"
-}
 function get_proper_ip() {
     EXECUTE_ON_THE_HOST=$1
     HOST=$2
@@ -76,4 +72,5 @@ for hop in $HOPS; do
     done
     SSH_FINAL+=" $extracted_connection_string_from_hop "
 done
+eval "$ADDITIONAL_COMMAND"
 eval "$SSH_FINAL"
