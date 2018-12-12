@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 eval $(ssh-agent -s)
-/usr/bin/expect /var/enter-passphrase.sh $SSH_FILE $SSH_PASSPHRASE
+export IFS=";"
+for i in $SSH_FILES; do
+    /usr/bin/expect /var/enter-passphrase.sh $i $SSH_PASSPHRASE
+done
 function extract_hop_host() {
     LINE=$1
     HOST=`echo $LINE | grep -oP "(?<=\@)([^\@\(]+)"`
@@ -50,7 +53,7 @@ for hop in $HOPS; do
         extracted_connection_string_from_hop=$( echo "$extracted_connection_string_from_hop" | sed -e "s/\\$extracted_hop_host/$host_ip/g" )
     fi
     if [[ $CURRENT_SIMPLE_PATH == "" ]]; then
-        CURRENT_SIMPLE_PATH+="ssh -A -o 'StrictHostKeyChecking no' $extracted_connection_string_from_hop "
+        CURRENT_SIMPLE_PATH+="ssh -A -o 'StrictHostKeyChecking no' -g $extracted_connection_string_from_hop "
     else
         CURRENT_SIMPLE_PATH+="ssh $extracted_connection_string_from_hop "
     fi
@@ -58,7 +61,7 @@ for hop in $HOPS; do
     if [[ $SSH_FINAL == "" ]]; then
         SSH_FINAL+="ssh -4 -tt -A -o 'StrictHostKeyChecking no' -g "
     else
-        SSH_FINAL+=" ssh "
+        SSH_FINAL+=" ssh -A "
     fi
     export IFS=","
     for extracted_host in $extracted_hosts_and_ports_to_forward; do
